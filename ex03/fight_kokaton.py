@@ -1,14 +1,13 @@
 import random
 import sys
 import time
-import math
+import mathimport math
 import pygame as pg
 
 
 WIDTH = 1600  # ゲームウィンドウの幅
 HEIGHT = 900  # ゲームウィンドウの高さ
 NUM_OF_BOMBS = 5  # 爆弾の数
-NUM_OF_BEAMS = 5 #ビームの数
 
 def check_bound(obj_rct: pg.Rect) -> tuple[bool, bool]:
     """
@@ -137,23 +136,6 @@ class Beam:
         screen.blit(self.img, self.rct)
 
 
-class Score:
-    def __init__(self):
-        self.font = pg.font.SysFont("hgp創英角ﾎﾟｯﾌﾟ体", 30)
-        self.color = [0,0,255]
-        self.score = 0
-        self.img = self.font.render(f"スコア:{self.score}", 0, self.color)
-        self.rct = self.img.get_rect()
-        self.rct.center = 100,HEIGHT-50
-    def update(self,screen:pg.Surface):
-        self.img = self.font.render(f"スコア:{self.score}",0,self.color)
-        screen.blit(self.img,self.rct)
-    def score_up(self):
-        self.score += 1
-        
-
-
-
 def main():
     pg.display.set_caption("たたかえ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))    
@@ -161,7 +143,6 @@ def main():
     bird = Bird(3, (900, 400))
     # bomb = Bomb((255, 0, 0), 10)
     bombs = [Bomb((255, 0, 0), 10) for _ in range(NUM_OF_BOMBS)]
-    beams = []
     beam = None
 
     clock = pg.time.Clock()
@@ -188,11 +169,10 @@ def main():
         for i, bomb in enumerate(bombs):
             for j,beam in enumerate(beams):
                 if bomb.rct.colliderect(beam.rct):
-                    bombs.pop(i)
-                    beams.pop(j)
+                    bombs[i] = None
+                    beam = None
                     bird.change_img(6, screen)
-                    score.score_up()
-                    pg.display.update() 
+                    pg.display.update()              
 
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen)

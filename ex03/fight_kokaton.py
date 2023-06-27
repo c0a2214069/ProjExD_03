@@ -1,7 +1,7 @@
 import random
 import sys
 import time
-import mathimport math
+import math
 import pygame as pg
 
 
@@ -136,6 +136,37 @@ class Beam:
         screen.blit(self.img, self.rct)
 
 
+class Score:
+    def __init__(self):
+        self.font = pg.font.SysFont("hgp創英角ﾎﾟｯﾌﾟ体", 30)
+        self.color = [0,0,255]
+        self.score = 0
+        self.img = self.font.render(f"スコア:{self.score}", 0, self.color)
+        self.rct = self.img.get_rect()
+        self.rct.center = 100,HEIGHT-50
+    def update(self,screen:pg.Surface):
+        self.img = self.font.render(f"スコア:{self.score}",0,self.color)
+        screen.blit(self.img,self.rct)
+    def score_up(self):
+        self.score += 1
+        
+
+class Explosion:
+
+    def __init__(self,bomb):
+        img = pg.image.load(f"ex03/fig/explosion.gif")
+        self.images = [img,pg.transform.flip(img,True,True)]
+        self.img = self.images[0]
+        self.rct = self.img.get_rect()
+        self.life = 10
+        self.rct.center = bomb.rct.center
+        
+    def update(self,screen:pg.Surface):
+        self.life -= 1
+        self.img = self.images[self.life%2]
+        screen.blit(self.img,self.rct)
+
+
 def main():
     pg.display.set_caption("たたかえ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))    
@@ -143,6 +174,8 @@ def main():
     bird = Bird(3, (900, 400))
     # bomb = Bomb((255, 0, 0), 10)
     bombs = [Bomb((255, 0, 0), 10) for _ in range(NUM_OF_BOMBS)]
+    exp = []
+    beams = []
     beam = None
 
     clock = pg.time.Clock()
@@ -169,11 +202,15 @@ def main():
         for i, bomb in enumerate(bombs):
             for j,beam in enumerate(beams):
                 if bomb.rct.colliderect(beam.rct):
-                    bombs[i] = None
-                    beam = None
+                    bombs.pop(i)
+                    beams.pop(j)
                     bird.change_img(6, screen)
-                    pg.display.update()              
-
+                    score.score_up()
+                    pg.display.update()
+        if exp != []:
+            for i in exp: 
+                i.update(screen) 
+        exp = [explo for explo in exp if explo.life>0]
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen)
         for bomb in bombs:

@@ -160,7 +160,7 @@ class Explosion:
         self.rct = self.img.get_rect()
         self.life = 10
         self.rct.center = bomb.rct.center
-        
+
     def update(self,screen:pg.Surface):
         self.life -= 1
         self.img = self.images[self.life%2]
@@ -169,7 +169,7 @@ class Explosion:
 
 def main():
     pg.display.set_caption("たたかえ！こうかとん")
-    screen = pg.display.set_mode((WIDTH, HEIGHT))    
+    screen = pg.display.set_mode((WIDTH, HEIGHT))   
     bg_img = pg.image.load("ex03/fig/pg_bg.jpg")
     bird = Bird(3, (900, 400))
     # bomb = Bomb((255, 0, 0), 10)

@@ -8,7 +8,7 @@ import pygame as pg
 WIDTH = 1600  # ゲームウィンドウの幅
 HEIGHT = 900  # ゲームウィンドウの高さ
 NUM_OF_BOMBS = 5  # 爆弾の数
-
+NUM_OF_BEAMS = 5 #ビームの数
 
 def check_bound(obj_rct: pg.Rect) -> tuple[bool, bool]:
     """
@@ -161,6 +161,7 @@ def main():
     bird = Bird(3, (900, 400))
     # bomb = Bomb((255, 0, 0), 10)
     bombs = [Bomb((255, 0, 0), 10) for _ in range(NUM_OF_BOMBS)]
+    beams = []
     beam = None
 
     clock = pg.time.Clock()
@@ -172,6 +173,7 @@ def main():
                 return
             if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
                 beam = Beam(bird)  # ビームクラスのインスタンスを生成する
+                beams.append(beam)
                 
         screen.blit(bg_img, [0, 0])
         
@@ -184,17 +186,16 @@ def main():
                 return
         
         for i, bomb in enumerate(bombs):
-            if beam is not None:
+            for j,beam in enumerate(beams):
                 if bomb.rct.colliderect(beam.rct):
-                    bombs[i] = None
-                    beam = None
+                    bombs.pop(i)
+                    beams.pop(j)
                     bird.change_img(6, screen)
                     score.score_up()
-                    pg.display.update()              
+                    pg.display.update() 
 
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen)
-        bombs = [bomb for bomb in bombs if bomb is not None]
         for bomb in bombs:
             bomb.update(screen)
         if beam is not None:
